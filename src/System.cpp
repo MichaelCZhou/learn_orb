@@ -65,7 +65,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
-
+    //加载词典到mpVocabulary
     mpVocabulary = new ORBVocabulary();
     bool bVocLoad = false; // chose loading method based on file extension
     if (has_suffix(strVocFile, ".txt"))
@@ -83,13 +83,17 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cout << "Vocabulary loaded!" << endl << endl;
 
     //Create KeyFrame Database
+    //创建关键帧的数据库
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
-
+                              //定义在keyframedatabase.h里面
     //Create the Map
+    //new在堆上动态创建一个对象时：获得一块内存空间、调用构造函数、返回正确的指针。
     mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
+    //创建视图
     mpFrameDrawer = new FrameDrawer(mpMap);
+    //创建画图器
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     //Initialize the Tracking thread
@@ -106,6 +110,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
 
     //Initialize the Viewer thread and launch
+    //初始化显示线程并运行
     mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile);
     if(bUseViewer)
         mptViewer = new thread(&Viewer::Run, mpViewer);
@@ -167,6 +172,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     }
 
     return mpTracker->GrabImageStereo(imLeft,imRight,timestamp);
+    //跟踪线程的入口，因为调用该函数的对象为指针mpTracker
 }
 
 cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp)
@@ -425,7 +431,7 @@ void System::SaveTrajectoryKITTI(const string &filename)
     {
         ORB_SLAM2::KeyFrame* pKF = *lRit;
 
-        cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
+        cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);//(int rows, int cols, int type)
 
         while(pKF->isBad())
         {

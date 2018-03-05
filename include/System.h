@@ -39,12 +39,12 @@
 namespace ORB_SLAM2
 {
 
-class Viewer;
-class FrameDrawer;
-class Map;
-class Tracking;
-class LocalMapping;
-class LoopClosing;
+class Viewer;      //画图
+class FrameDrawer; //画每一帧
+class Map;         //对map进行操作
+class Tracking;    //追踪的过程
+class LocalMapping;//局部地图
+class LoopClosing; //闭环检测
 
 class System
 {
@@ -59,11 +59,13 @@ public:
 public:
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
+    //初始化，包含局部建图，闭环检测，视图三个线程
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
 
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
+    //返回相机位姿（跟踪失败则为空）
     cv::Mat TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp);
 
     // Process the given rgbd frame. Depthmap must be registered to the RGB frame.
@@ -75,11 +77,15 @@ public:
     // Proccess the given monocular frame
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
+    //取图像及其对应的时间戳
     cv::Mat TrackMonocular(const cv::Mat &im, const double &timestamp);
 
     // This stops local mapping thread (map building) and performs only camera tracking.
+    //暂停局部建图，仅仅进行相机追踪，局部定位
     void ActivateLocalizationMode();
     // This resumes local mapping thread and performs SLAM again.
+    //重新局部地图的线程
+    //在这里使用的是mutex信号量的多线程编程
     void DeactivateLocalizationMode();
 
     // Reset the system (clear map)
@@ -118,27 +124,38 @@ private:
     eSensor mSensor;
 
     // ORB vocabulary used for place recognition and feature matching.
+    //用于特征匹配和闭环检测的字典
     ORBVocabulary* mpVocabulary;
+    //声明一个ORBVocabulary类的mpVocabulary的指针
+    //指针是变量，字节长度是固定的。指针保存的是地址，由操作系统的位数决定。指针指向的内存空间和对应的内存空间。
 
     // KeyFrame database for place recognition (relocalization and loop detection).
+    //关键帧保存的地方
+    //重定位和闭环检测
     KeyFrameDatabase* mpKeyFrameDatabase;
 
     // Map structure that stores the pointers to all KeyFrames and MapPoints.
+    //所有的关键帧和点云存储的地方
     Map* mpMap;
 
     // Tracker. It receives a frame and computes the associated camera pose.
     // It also decides when to insert a new keyframe, create some new MapPoints and
     // performs relocalization if tracking fails.
+    //接受一帧并计算其相机位姿。也决定什么时候插入一个新的关键帧，生成一些新的关键点，
+    //跟踪失败后重新定位
     Tracking* mpTracker;
 
     // Local Mapper. It manages the local map and performs local bundle adjustment.
+    //管理局部建图，并使用局部BA
     LocalMapping* mpLocalMapper;
 
     // Loop Closer. It searches loops with every new keyframe. If there is a loop it performs
     // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
+    //闭环检测，每插入一个关键帧就计算是否有闭环并且进行全局的BA
     LoopClosing* mpLoopCloser;
 
     // The viewer draws the map and the current camera pose. It uses Pangolin.
+    //使用Pangolin库查看地图和相机位姿
     Viewer* mpViewer;
 
     FrameDrawer* mpFrameDrawer;

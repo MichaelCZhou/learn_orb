@@ -90,11 +90,6 @@ void LocalMapping::Run()
             if(!CheckNewKeyFrames() && !stopRequested())
             {
                 // VI-D Local BA
-                // 局部集束调整（local BA）会将当前处理的关键帧Ki进行优化，优化时如下图所示：现在优化Pos3位置的关键帧。同时参与优化的还有：
-                //所有在Covibility Graph中与该关键帧相连的关键帧Kc，即下图中的Pos2；
-                //所以被这些关键帧观察到的地图点，即X1和X2。
-                //另外还有能观察到地图点的但并未与当前处理的关键帧相连的关键帧，即下图中的Pos1。
-                //但要注意的是，诸如Pos1的关键帧，参与优化中的约束，但不作为变量去改变它们的值。优化时得到的外点会在优化的中期或后期被剔除。 
                 if(mpMap->KeyFramesInMap()>2)
                     Optimizer::LocalBundleAdjustment(mpCurrentKeyFrame,&mbAbortBA, mpMap);
 
@@ -167,8 +162,7 @@ bool LocalMapping::CheckNewKeyFrames()
 
 /**
  * @brief 处理列表中的关键帧
- * 首先将新的关键帧Ki作为新的节点Ki加入Covibility Graph，并且更新与那些能够共享地图点的关键帧节点相连接的边。
- * 同时更新关键帧Ki的生长树，并计算表示关键帧的词袋BOW。这一部分的接口是在L
+ * 
  * - 计算Bow，加速三角化新的MapPoints
  * - 关联当前关键帧至MapPoints，并更新MapPoints的平均观测方向和观测距离范围
  * - 插入关键帧，更新Covisibility图和Essential图
@@ -187,7 +181,6 @@ void LocalMapping::ProcessNewKeyFrame()
 
     // Compute Bags of Words structures
     // 步骤2：计算该关键帧特征点的Bow映射关系
-    // 计算词袋，整合地图点到新的关键帧，计算法线和描述子的接口如下：
     mpCurrentKeyFrame->ComputeBoW();
 
     // Associate MapPoints to the new keyframe and update normal and descriptor
@@ -227,7 +220,6 @@ void LocalMapping::ProcessNewKeyFrame()
     }    
 
     // Update links in the Covisibility Graph
-    // 更新Covisibility Graph，将关键帧插入Map中的接口如下
     // 步骤4：更新关键帧间的连接关系，Covisibility图和Essential图(tree)
     mpCurrentKeyFrame->UpdateConnections();
 

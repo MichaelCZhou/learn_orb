@@ -46,7 +46,7 @@ Initializer::Initializer(const Frame &ReferenceFrame, float sigma, int iteration
 
     mSigma = sigma;
     mSigma2 = sigma*sigma;
-    mMaxIterations = iterations;
+    mMaxIterations = iterations; //ransac diedaicishu
 }
 
 /**

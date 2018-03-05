@@ -45,15 +45,20 @@ int main(int argc, char **argv)
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
+
+    //加载图片，传入图片路径、传回的是文件名、每幅图片的时间戳
     LoadImages(string(argv[3]), vstrImageFilenames, vTimestamps);
 
+    //图片的张数
     int nImages = vstrImageFilenames.size();
 
+    //对slam系统进行初始化，传入字典和配置的路径
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
+    //计算追踪所花的时间
     vTimesTrack.resize(nImages);
 
     cout << endl << "-------" << endl;
@@ -75,11 +80,14 @@ int main(int argc, char **argv)
         }
 
 #ifdef COMPILEDWITHC11
+        //如果编译器可以编译c++11.
+        //获取当前时间
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
+        //图片放入slam系统中进行追踪（图像，相应的时间戳）
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe);
 
@@ -90,10 +98,13 @@ int main(int argc, char **argv)
 #endif
 
         double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
-
+        //计算追踪该图片花的时间
         vTimesTrack[ni]=ttrack;
 
         // Wait to load the next frame
+        //计算下一帧图片的时间戳与当前时间戳的差值T，与追踪所需时间进行比较
+        //如果有必要就将当前线程暂停sleep
+        //主要为了模拟时间情况，因为追踪结束以后可能下一帧还没来
         double T=0;
         if(ni<nImages-1)
             T = vTimestamps[ni+1]-tframe;
@@ -101,7 +112,7 @@ int main(int argc, char **argv)
             T = tframe-vTimestamps[ni-1];
 
         if(ttrack<T)
-            usleep((T-ttrack)*1e6);
+            usleep((T-ttrack)*1e6);//乘以1000000是什么意思？
     }
 
     // Stop all threads
@@ -127,6 +138,7 @@ int main(int argc, char **argv)
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
     ifstream fTimes;
+    //读4541幅图片的时间戳
     string strPathTimeFile = strPathToSequence + "/times.txt";
     fTimes.open(strPathTimeFile.c_str());
     while(!fTimes.eof())
@@ -142,7 +154,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilena
             vTimestamps.push_back(t);
         }
     }
-
+    //使用image_0目录下的文件，这是双目摄像头左边摄像头的目录
     string strPrefixLeft = strPathToSequence + "/image_0/";
 
     const int nTimes = vTimestamps.size();
@@ -151,6 +163,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilena
     for(int i=0; i<nTimes; i++)
     {
         stringstream ss;
+        //设置0~nTime-2的图片的路径
         ss << setfill('0') << setw(6) << i;
         vstrImageFilenames[i] = strPrefixLeft + ss.str() + ".png";
     }

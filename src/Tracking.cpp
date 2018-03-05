@@ -355,7 +355,7 @@ void Tracking::Track()
         // Initial camera pose estimation using motion model or relocalization (if tracking is lost)
         // 在viewer中有个开关menuLocalizationMode，有它控制是否ActivateLocalizationMode，并最终管控mbOnlyTracking
         // mbOnlyTracking等于false表示正常VO模式（有地图更新），mbOnlyTracking等于true表示用户手动选择定位模式
-        if(!mbOnlyTracking)
+        if(!mbOnlyTracking) //false,correct vo model
         {
             // Local Mapping is activated. This is the normal behaviour, unless
             // you explicitly activate the "only tracking" mode.
@@ -399,7 +399,7 @@ void Tracking::Track()
                 bOK = Relocalization();
             }
         }
-        else
+        else      //manul select location model
         {
             // Localization Mode: Local Mapping is deactivated
             // 只进行跟踪tracking，局部地图不工作
@@ -411,12 +411,12 @@ void Tracking::Track()
             {
                 bOK = Relocalization();
             }
-            else
+            else   //mbOnlyTracking为true
             {
                 // mbVO是mbOnlyTracking为true时的才有的一个变量
                 // mbVO为false表示此帧匹配了很多的MapPoints，跟踪很正常，
                 // mbVO为true表明此帧匹配了很少的MapPoints，少于10个，要跪的节奏
-                if(!mbVO)
+                if(!mbVO) //track right
                 {
                     // In last frame we tracked enough MapPoints in the map
                     // mbVO为0则表明此帧匹配了很多的3D map点，非常好
@@ -433,7 +433,7 @@ void Tracking::Track()
                         bOK = TrackReferenceKeyFrame();
                     }
                 }
-                else
+                else   //此帧匹配了很少的MapPoints，少于10个，要跪的节奏
                 {
                     // In last frame we tracked mainly "visual odometry" points.
 

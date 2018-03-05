@@ -62,12 +62,13 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
+    //read pictures
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
         im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
-
+        //time stamp
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        // Pass the image to the SLAM system
+        // Pass the image and timestamp to the SLAM system
         SLAM.TrackMonocular(im,tframe);
 
 #ifdef COMPILEDWITHC11
