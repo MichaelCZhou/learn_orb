@@ -50,8 +50,9 @@ int main(int argc, char **argv)
     //vector一种数据结构，确切的说是一个类，相当于一个动态数组，一定加上using namespce std;
     LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
 
-    const int nImages = vstrImageLeft.size();
     //size()指目前存在的元素个数
+    const int nImages = vstrImageLeft.size();
+
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     //创建一个SLAM系统。
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
@@ -135,6 +136,10 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
     ifstream fTimes;
     string strPathTimeFile = strPathToSequence + "/times.txt";
     fTimes.open(strPathTimeFile.c_str());
+    //open("file.txt");
+    //从一个string得到c类型的字符数组：c_str()、data()、copy(p,n)。
+    //返回当前字符串的首字符地址。换种说法，c_str()函数返回一个指向正规C字符串的指针常量，内容与本string串相同。
+    //c_str()的原型是：const char*c_str() const;
     while(!fTimes.eof())
     {
         string s;
@@ -152,13 +157,19 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
     string strPrefixLeft = strPathToSequence + "/image_0/";
     string strPrefixRight = strPathToSequence + "/image_1/";
 
-    const int nTimes = vTimestamps.size();
+    //用const表示不会修改这个参数.
+    //由时间戳多少决定分配给图像空间的大小
+    const int nTimes = vTimestamps.size();   
     vstrImageLeft.resize(nTimes);
     vstrImageRight.resize(nTimes);
 
     for(int i=0; i<nTimes; i++)
     {
         stringstream ss;
+        //std::setw ：需要填充多少个字符,默认填充的字符为' '空格
+        //std::setfill：设置std::setw将填充什么样的字符，如:std::setfill('*')
+        //std::setbase(n)：将输出数据转换为n进制
+        //std::setprecision()：控制输出流显示浮点数的数字个数，C++默认的流输出数值有效位是6。
         ss << setfill('0') << setw(6) << i;
         vstrImageLeft[i] = strPrefixLeft + ss.str() + ".png";
         vstrImageRight[i] = strPrefixRight + ss.str() + ".png";

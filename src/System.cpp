@@ -454,4 +454,4 @@ void System::SaveTrajectoryKITTI(const string &filename)
     cout << endl << "trajectory saved!" << endl;
 }
 
-} //namespace ORB_SLAM
+} //namespace ORB_SLAM2

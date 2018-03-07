@@ -66,6 +66,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     float cx = fSettings["Camera.cx"];
     float cy = fSettings["Camera.cy"];
 
+    //内参矩阵.dx和dy表示：x方向和y方向的一个像素分别占多少长度单位,而fx = f/dx,fy = f/dy.
     //     |fx  0   cx|
     // K = |0   fy  cy|
     //     |0   0   1 |
