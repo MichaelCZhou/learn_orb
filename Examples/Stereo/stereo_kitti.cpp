@@ -36,6 +36,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
 
 int main(int argc, char **argv)
 {
+    //命令行参数
     if(argc != 4)
     {
         cerr << endl << "Usage: ./stereo_kitti path_to_vocabulary path_to_settings path_to_sequence" << endl;
@@ -78,10 +79,10 @@ int main(int argc, char **argv)
         {
             cerr << endl << "Failed to load image at: "
                  << string(vstrImageLeft[ni]) << endl;
+            //插入器<<向流输出数据,析取器>>从流中输入数据
             //cout：写到标准输出的ostream对象；
-
-            //cerr：不经过缓冲直接输出到标准错误的ostream对象，常用于程序错误信息；目的就是在你最需要它的紧急情况下，还能得到输出功能的支持
-
+            //cerr：不经过缓冲直接输出到标准错误的ostream对象，常用于程序错误信息；
+                 //目的就是在你最需要它的紧急情况下，还能得到输出功能的支持
             //clog：也是输出标准错误流（这点儿和cerr是一样的），貌似平时很少用到这个啊；
             return 1;
         }

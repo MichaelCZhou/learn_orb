@@ -226,7 +226,7 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
         }
     }
 
-    // 步骤2：构造Frame
+    // 步骤2：构造Frame,有了mCurrentFrame对象,就可以进入跟踪模块Track().
     mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
 
     // 步骤3：跟踪
@@ -631,6 +631,7 @@ void Tracking::Track()
  */
 void Tracking::StereoInitialization()
 {
+    //如果特征点数N>500
     if(mCurrentFrame.N>500)
     {
         // Set Frame pose to the origin
