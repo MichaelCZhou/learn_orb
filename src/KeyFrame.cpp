@@ -536,12 +536,14 @@ void KeyFrame::SetNotErase()
 {
     unique_lock<mutex> lock(mMutexConnections);
     mbNotErase = true;
+    //初始mbNotErase状态是true，那么调用SetBadFlag后，将mbToBeErased状态置为true，然后return，并没有执行SetBadFlag()中后面的代码。
 }
 
 void KeyFrame::SetErase()
 {
     {
         unique_lock<mutex> lock(mMutexConnections);
+        // 然后调用SetErase()，这时首先要检查mspLoopEdges是否是空的！因为如果当前帧维护了一个回环，删了该关键帧回环就没了。。。通常情况下是空的，那么把mbNotErase置为false，此时再在SetErase()中调用SetBagFlag时，就会真正去执行删除该帧的代码了。
         if(mspLoopEdges.empty())
         {
             mbNotErase = false;
@@ -585,12 +587,21 @@ void KeyFrame::SetBadFlag()
         mvpOrderedConnectedKeyFrames.clear();
 
         // Update Spanning Tree
+        // 首先将当前帧的父亲,放入候选父亲中.
         set<KeyFrame*> sParentCandidates;
         sParentCandidates.insert(mpParent);
 
         // Assign at each iteration one children with a parent (the pair with highest covisibility weight)
         // Include that children as new parent candidate for the rest
         // 如果这个关键帧有自己的孩子关键帧，告诉这些子关键帧，它们的父关键帧不行了，赶紧找新的父关键帧
+        // -----------------------------------------------------------------------------------
+        // 遍历当前帧的所有儿子，然后遍历儿子A的每个共视帧，如果其中有候选父亲，则将A的父亲更新为该候选父亲， |
+        // 并且将A放入候选父亲中(因为这时候A已经将整个图联系起来了); 如果没有,break.                    |
+        // 如果遍历一圈下来，发现有的儿子还没有找到新父亲，例如儿子B的共视帧不是候选父亲里的任何一个。       |
+        // 这种情况出现在，B和当前帧的父亲不存在共视关系（速度太快，旋转太急，匹配跟丢）。                 |
+        // 并且B与当前帧的儿子之间也没有共视关系：当前帧不是一个好的关键帧，本来就没有多少儿子；            |
+        // 或者B本身是个例外，恩, 反正B是个孤家寡人.                                                |
+        // 那么直接将B的父亲设置为当前帧的父亲，交给爷爷去管.一一一一一一一一一一一一一一一一一一一一一一一一一                                         |
         while(!mspChildrens.empty())
         {
             bool bContinue = false;
