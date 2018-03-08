@@ -139,6 +139,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     // Check mode change
     {
         unique_lock<mutex> lock(mMutexMode);
+        //定位模式停止建图?
         if(mbActivateLocalizationMode)
         {
             mpLocalMapper->RequestStop();
@@ -185,6 +186,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
 
     // Check mode change
     {
+        //mutex互斥量类型
         unique_lock<mutex> lock(mMutexMode);
         if(mbActivateLocalizationMode)
         {

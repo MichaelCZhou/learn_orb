@@ -636,7 +636,7 @@ void Tracking::StereoInitialization()
     if(mCurrentFrame.N>500)
     {
         // Set Frame pose to the origin
-        // 步骤1：设定初始位姿
+        // 步骤1：设定初始位姿(4x4矩阵,32位浮点数)
         mCurrentFrame.SetPose(cv::Mat::eye(4,4,CV_32F));
 
         // Create KeyFrame
@@ -644,6 +644,8 @@ void Tracking::StereoInitialization()
         // mCurrentFrame的数据类型为Frame
         // KeyFrame包含Frame、地图3D点、以及BoW
         // KeyFrame里有一个mpMap，Tracking里有一个mpMap，而KeyFrame里的mpMap都指向Tracking里的这个mpMap
+        // mpMap就是我们整个位姿与地图（可以想象成ORB-SLAM运行时的那个界面世界），
+        // MapPoint和KeyFrame都被包含在这个mpMap中。
         // KeyFrame里有一个mpKeyFrameDB，Tracking里有一个mpKeyFrameDB，而KeyFrame里的mpMap都指向Tracking里的这个mpKeyFrameDB
         KeyFrame* pKFini = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
 

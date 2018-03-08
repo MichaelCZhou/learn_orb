@@ -58,10 +58,11 @@ int main(int argc, char **argv)
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
 
     // Vector for tracking time statistics
+    //vTimesTrack为跟踪时间的统计数据
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
-    //vTimesTrack为跟踪时间的统计数据
     //resize()重新指定有效元素的个数，区别于reserve()指定容器能存储数据的个数。另外，capacity()指容器能存储数据的个数
+
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
     cout << "Images in the sequence: " << nImages << endl << endl;
@@ -71,11 +72,14 @@ int main(int argc, char **argv)
     for(int ni = 0; ni < nImages; ni++)
     {
         // Read left and right images from file
+        //(CV_LOAD_IMAGE_ANYCOLOR和CV_LOAD_IMAGE_UNCHANGED是等值的）8bit,
+        //表示不对图像进行任何处理，按照原始图像类型将图像载入
         imLeft = cv::imread(vstrImageLeft[ni],CV_LOAD_IMAGE_UNCHANGED);
         imRight = cv::imread(vstrImageRight[ni],CV_LOAD_IMAGE_UNCHANGED);
-        //(CV_LOAD_IMAGE_ANYCOLOR和CV_LOAD_IMAGE_UNCHANGED是等值的）8bit,表示不对图像进行任何处理，按照原始图像类型将图像载入
-        double tframe = vTimestamps[ni];
+
         //第ni帧的时间戳
+        double tframe = vTimestamps[ni];
+
         if(imLeft.empty())
         {
             cerr << endl << "Failed to load image at: "
@@ -88,18 +92,22 @@ int main(int argc, char **argv)
             return 1;
         }
 
+        //计时开始
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
         // Pass the images to the SLAM system
+        //SLAM访问TrackStereo（入口）处理核心
         SLAM.TrackStereo(imLeft,imRight,tframe);        
-        //SLAM访问TrackStereo（入口）
-        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 
-        double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+        //跟踪完一对图像后计时结束
+        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
         //ttrack为两帧图像之间的时间差
+        double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+        //将时间差存入记录时间数据的容器
         vTimesTrack[ni]=ttrack;
 
         // Wait to load the next frame
+        //等待下一帧(未看:
         double T=0;
         if(ni<nImages-1)
             T = vTimestamps[ni+1]-tframe;
@@ -114,6 +122,7 @@ int main(int argc, char **argv)
     SLAM.Shutdown();
 
     // Tracking time statistics
+    //100ms = 10Hz,66.7ms = 15Hz,50ms = 20Hz,33.33ms = 30Hz,20ms = 50Hz,10ms = 100Hz,
     sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
     for(int ni=0; ni<nImages; ni++)

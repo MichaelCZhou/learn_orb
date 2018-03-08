@@ -7,7 +7,7 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-# Check C++11 or C++0x support
+# Check C++11 or C++0x support,并增加了多线程.
 add_definitions(-DCOMPILEDWITHC11)
 if( CMAKE_BUILD_TYPE MATCHES "Debug" )
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -msse3 -std=c++11 -pthread -g -march=native")
