@@ -48,9 +48,10 @@ int main(int argc, char **argv)
     vector<string> vstrImageRight;
     vector<double> vTimestamps;
     //vector一种数据结构，确切的说是一个类，相当于一个动态数组，一定加上using namespce std;
+    // 第一次载入图像,由时间戳得到图片数量,并依序存入容器中.
     LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
 
-    //size()指目前存在的元素个数
+    //size()指目前存在的元素个数.由上面得知.
     const int nImages = vstrImageLeft.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
     {
         // Read left and right images from file
         //(CV_LOAD_IMAGE_ANYCOLOR和CV_LOAD_IMAGE_UNCHANGED是等值的）8bit,
-        //表示不对图像进行任何处理，按照原始图像类型将图像载入
+        //表示不对图像进行任何处理，按照原始图像类型将图像从load函数中的容器中载入
         imLeft = cv::imread(vstrImageLeft[ni],CV_LOAD_IMAGE_UNCHANGED);
         imRight = cv::imread(vstrImageRight[ni],CV_LOAD_IMAGE_UNCHANGED);
 
