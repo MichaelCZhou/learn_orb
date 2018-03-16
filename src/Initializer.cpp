@@ -40,7 +40,7 @@ namespace ORB_SLAM2
  */
 Initializer::Initializer(const Frame &ReferenceFrame, float sigma, int iterations)
 {
-    mK = ReferenceFrame.mK.clone();
+    mK = ReferenceFrame.mK.clone();  //mk内参矩阵
 
     mvKeys1 = ReferenceFrame.mvKeysUn;
 
@@ -723,7 +723,7 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21, cv:
     // Motion and structure from motion in a piecewise planar environment.
     // International Journal of Pattern Recognition and Artificial Intelligence, 1988
 
-    // 因为特征点是图像坐标系，所以讲H矩阵由相机坐标系换算到图像坐标系
+    // 因为特征点是图像坐标系，所以将H矩阵由相机坐标系换算到图像坐标系
     cv::Mat invK = K.inv();
     cv::Mat A = invK*H21*K;
 
@@ -821,8 +821,8 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21, cv:
     // 计算旋转矩阵 R‘，计算ppt中公式21
     for(int i=0; i<4; i++)
     {
-        cv::Mat Rp=cv::Mat::eye(3,3,CV_32F);
-        Rp.at<float>(0,0)=cphi;
+        cv::Mat Rp=cv::Mat::eye(3,3,CV_32F);//Mat::eye返回一个恒等制定大小和类型矩阵.
+        Rp.at<float>(0,0)=cphi;     //矩阵元素表示方式,at<>(),<>内的数据类型,取决于Mat中元素的数据类型.
         Rp.at<float>(0,2)=sphi[i];
         Rp.at<float>(1,1)=-1;
         Rp.at<float>(2,0)=sphi[i];
@@ -1171,7 +1171,7 @@ void Initializer::DecomposeE(const cv::Mat &E, cv::Mat &R1, cv::Mat &R2, cv::Mat
     // 对 t 有归一化，但是这个地方并没有决定单目整个SLAM过程的尺度
     // 因为CreateInitialMapMonocular函数对3D点深度会缩放，然后反过来对 t 有改变
     u.col(2).copyTo(t);
-    t=t/cv::norm(t);
+    t=t/cv::norm(t);    //cvNorm()函数的作用:用于计算一个或者两个数组之间的范数,范数的类型由CV_L1,CV_L2这样的宏来决定
 
     cv::Mat W(3,3,CV_32F,cv::Scalar(0));
     W.at<float>(0,1)=-1;

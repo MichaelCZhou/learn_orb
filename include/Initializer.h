@@ -42,6 +42,7 @@ public:
     Initializer(const Frame &ReferenceFrame, float sigma = 1.0, int iterations = 200);
 
     // Computes in parallel a fundamental matrix and a homography
+    // 并行计算基础矩阵和单应矩阵
     // Selects a model and tries to recover the motion and the structure from motion
     // 用current frame,也就是用SLAM逻辑上的第二帧来初始化整个SLAM，得到最开始两帧之间的R t,以及点云
     bool Initialize(const Frame &CurrentFrame, const vector<int> &vMatches12,
@@ -84,7 +85,7 @@ private:
                        const vector<Match> &vMatches12, vector<bool> &vbInliers,
                        const cv::Mat &K, vector<cv::Point3f> &vP3D, float th2, vector<bool> &vbGood, float &parallax);
 
-    // F矩阵通过结合内参可以得到Essential矩阵，该函数用于分解E矩阵，将得到4组解
+    // F矩阵通过结合内参可以得到Essential矩阵，该函数用于分解E矩阵，将得到4组解,E是归一化下的F
     void DecomposeE(const cv::Mat &E, cv::Mat &R1, cv::Mat &R2, cv::Mat &t);
 
 
