@@ -1171,7 +1171,7 @@ void Initializer::DecomposeE(const cv::Mat &E, cv::Mat &R1, cv::Mat &R2, cv::Mat
     // 对 t 有归一化，但是这个地方并没有决定单目整个SLAM过程的尺度
     // 因为CreateInitialMapMonocular函数对3D点深度会缩放，然后反过来对 t 有改变
     u.col(2).copyTo(t);
-    t=t/cv::norm(t);    //cvNorm()函数的作用:用于计算一个或者两个数组之间的范数,范数的类型由CV_L1,CV_L2这样的宏来决定
+    t=t/cv::norm(t);    //cv::Norm()函数的作用:用于计算一个或者两个数组之间的范数,范数的类型由CV_L1,CV_L2这样的宏来决定
 
     cv::Mat W(3,3,CV_32F,cv::Scalar(0));
     W.at<float>(0,1)=-1;
