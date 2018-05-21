@@ -23,7 +23,7 @@
 #include<algorithm>
 #include<fstream>
 #include<iomanip>
-#include<chrono>
+#include<chrono> //声明计时
 
 #include<opencv2/core/core.hpp>
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     vector<string> vstrImageRight;
     vector<double> vTimestamps;
     //vector一种数据结构，确切的说是一个类，相当于一个动态数组，一定加上using namespce std;
-    // 第一次载入图像,由时间戳得到图片数量,并依序存入容器中.
+    //第一次载入图像,由时间戳得到图片数量,并依序存入容器中.得到了左右摄像头,时间戳的动态数组容器.可以操作指定图像以及对应相应时间戳
     LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
 
     //size()指目前存在的元素个数.由上面得知.
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 
         //跟踪完一对图像后计时结束
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
-        //ttrack为两帧图像之间的时间差
+        //ttrack为两帧图像之间的时间差,意欲何为?
         double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
         //将时间差存入记录时间数据的容器
         vTimesTrack[ni]=ttrack;
