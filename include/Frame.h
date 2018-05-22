@@ -190,7 +190,7 @@ public:
     // Reference Keyframe.
     KeyFrame* mpReferenceKF;//指针，指向参考关键帧
 
-    // Scale pyramid info.
+    // Scale pyramid info.这么做是为了什么?
     int mnScaleLevels;//图像提金字塔的层数
     float mfScaleFactor;//图像提金字塔的尺度因子
     float mfLogScaleFactor;//
