@@ -86,11 +86,11 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     threadLeft.join();
     threadRight.join();
 
-    N = mvKeys.size();
+    N = mvKeys.size(); // mvKeys:原始左图像提取出的特征点（未校正）
 
     if(mvKeys.empty())
         return;
-    // Undistort特征点，这里没有对双目进行校正，因为要求输入的图像已经进行极线校正
+    // Undistort特征点，这里没有对双目进行校正，因为要求输入的图像已经进行极线校正  TODO:so,如何对双目进行校正???
     UndistortKeyPoints();
 
     // 计算双目间的匹配, 匹配成功的特征点会计算其深度
@@ -641,7 +641,7 @@ void Frame::ComputeStereoMatches()
         // 最好的匹配的匹配误差存在bestDist，匹配点位置存在bestIdxR中
 
         // Subpixel match by correlation
-        // 步骤2.2：通过SAD匹配提高像素匹配修正量bestincR
+        // 步骤2.2：通过SAD匹配提高像素匹配修正量bestincR.SAD(Sum of absolute differences)是一种图像匹配算法。基本思想：差的绝对值之和。此算法常用于图像块匹配，将每个像素对应数值之差的绝对值求和，据此评估两个图像块的相似度。该算法快速、但并不精确，通常用于多级处理的初步筛选。
         if(bestDist<thOrbDist)
         {
             // coordinates in image pyramid at keypoint scale
