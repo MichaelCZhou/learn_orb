@@ -591,8 +591,8 @@ void Frame::ComputeStereoMatches()
     for(int iL=0; iL<N; iL++)
     {
         const cv::KeyPoint &kpL = mvKeys[iL];
-        const int &levelL = kpL.octave;
-        const float &vL = kpL.pt.y;
+        const int &levelL = kpL.octave;   //octave is layers in pyh of keypoint???
+        const float &vL = kpL.pt.y;      //pt is coordinates of the keypoints
         const float &uL = kpL.pt.x;
 
         // 可能的匹配点
@@ -792,7 +792,7 @@ cv::Mat Frame::UnprojectStereo(const int &i)
         const float x = (u-cx)*z*invfx;
         const float y = (v-cy)*z*invfy;
         cv::Mat x3Dc = (cv::Mat_<float>(3,1) << x, y, z);
-        return mRwc*x3Dc+mOw;
+        return mRwc*x3Dc+mOw;   //mOw:translation from camera to world
     }
     else
         return cv::Mat();
